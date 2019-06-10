@@ -5,16 +5,6 @@ import terminalone
 import datetime
 
 
-# connect to t1
-def get_connection():
-    creds = {
-        "username": self.username,
-        "password": self.password,
-        "api_key": self.api_key
-    }
-    return terminalone.T1(auth_method="cookie", **creds)
-
-
 class Advertiser:
 
     def __init__(self, data=None, omg_advertiser=None):
@@ -25,13 +15,21 @@ class Advertiser:
         self.headers = {
             'Content-Type': 'application/x-www-form-urlencoded', 
             'Accept': 'application/vnd.mediamath.v1+json',
-            'Cookie': 'adama_session=' + str(t1.session_id)
+            'Cookie': 'adama_session=' + str(self.t1.session_id)
         }
 
-        self.base_url = "https://" + t1.api_base + "/"
-        self.service_url = t1._get_service_path('advertisers') + "/"
-        self.constructed_url = t1._construct_url("advertisers", entity=None, child=None, limit=None)[0]
-        self.url = base_url + service_url + constructed_url
+        self.base_url = "https://" + self.t1.api_base + "/"
+        self.service_url = self.t1._get_service_path('advertisers') + "/"
+        self.constructed_url = self.t1._construct_url("advertisers", entity=None, child=None, limit=None)[0]
+        self.url = self.base_url + self.service_url + self.constructed_url
+
+    def get_connection(self):
+        creds = {
+            "username": self.username,
+            "password": self.password,
+            "api_key": self.api_key
+        }
+        return terminalone.T1(auth_method="cookie", **creds)
 
     def generate_json_response(self, json_dict, response, request_body):
         response_json = {

@@ -5,15 +5,6 @@ import terminalone
 import itertools
 
 
-def get_connection():
-    creds = {
-        "username": self.username,
-        "password": self.password,
-        "api_key": self.api_key
-    }
-    return terminalone.T1(auth_method="cookie", **creds)
-
-
 class LineItem:
 
     page_limit = 100
@@ -27,8 +18,16 @@ class LineItem:
         self.headers = {
             'Content-Type': 'application/x-www-form-urlencoded', 
             'Accept': 'application/vnd.mediamath.v1+json',
-            'Cookie': 'adama_session=' + str(t1.session_id)
+            'Cookie': 'adama_session=' + str(self.t1.session_id)
         }
+
+    def get_connection(self):
+        creds = {
+            "username": self.username,
+            "password": self.password,
+            "api_key": self.api_key
+        }
+        return terminalone.T1(auth_method="cookie", **creds)
 
     def generate_url(self, obj_type):
 
