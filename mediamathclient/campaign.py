@@ -22,11 +22,6 @@ class Campaign:
             'Cookie': 'adama_session=' + str(self.t1.session_id)
         }
 
-        self.base_url = "https://" + t1.api_base + "/"
-        self.service_url = self.t1._get_service_path('campaigns') + "/"
-        self.constructed_url = self.t1._construct_url("campaigns", entity=None, child=None, limit=None)[0]
-        self.url = self.base_url + self.service_url + self.constructed_url
-
     def get_connection(self):
         creds = {
             "username": self.username,
