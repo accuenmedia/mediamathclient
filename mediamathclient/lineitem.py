@@ -15,9 +15,6 @@ def get_connection():
 
 
 class LineItem:
-    t1 = get_connection()
-    headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/vnd.mediamath.v1+json',
-               'Cookie': 'adama_session=' + str(t1.session_id)}
 
     page_limit = 100
 
@@ -25,6 +22,13 @@ class LineItem:
         self.api_key = api_key
         self.username = username
         self.password = password
+
+        self.t1 = get_connection()
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Accept': 'application/vnd.mediamath.v1+json',
+            'Cookie': 'adama_session=' + str(t1.session_id)
+        }
 
     def generate_url(self, obj_type):
 

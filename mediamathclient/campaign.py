@@ -16,13 +16,6 @@ def get_connection():
 
 
 class Campaign:
-    t1 = get_connection()
-    base_url = "https://" + t1.api_base + "/"
-    service_url = t1._get_service_path('campaigns') + "/"
-    constructed_url = t1._construct_url("campaigns", entity=None, child=None, limit=None)[0]
-    url = base_url + service_url + constructed_url
-    headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/vnd.mediamath.v1+json',
-               'Cookie': 'adama_session=' + str(t1.session_id)}
 
     def __init__(self, api_key, username, password, data=None, omg_campaign=None):
         self.api_key = api_key
@@ -30,6 +23,18 @@ class Campaign:
         self.password = password
         self.data = data
         self.omg_campaign = omg_campaign
+
+        self.t1 = get_connection()
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Accept': 'application/vnd.mediamath.v1+json',
+            'Cookie': 'adama_session=' + str(t1.session_id)
+        }
+
+        self.base_url = "https://" + t1.api_base + "/"
+        self.service_url = t1._get_service_path('campaigns') + "/"
+        self.constructed_url = t1._construct_url("campaigns", entity=None, child=None, limit=None)[0]
+        self.url = base_url + service_url + constructed_url
 
     def generate_json_response(self, json_dict, response, request_body):
         response_json = {

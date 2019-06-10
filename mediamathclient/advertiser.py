@@ -8,26 +8,30 @@ import datetime
 # connect to t1
 def get_connection():
     creds = {
-        "username": os.environ['MM_USERNAME'],
-        "password": os.environ['MM_PASSWORD'],
-        "api_key": os.environ['MM_API_KEY']
+        "username": self.username,
+        "password": self.password,
+        "api_key": self.api_key
     }
     return terminalone.T1(auth_method="cookie", **creds)
 
 
 class Advertiser:
-    t1 = get_connection()
-    base_url = "https://" + t1.api_base + "/"
-    service_url = t1._get_service_path('advertisers') + "/"
-    constructed_url = t1._construct_url("advertisers", entity=None, child=None, limit=None)[0]
-    url = base_url + service_url + constructed_url
-    headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/vnd.mediamath.v1+json',
-               'Cookie': 'adama_session=' + str(t1.session_id)}
 
     def __init__(self, data=None, omg_advertiser=None):
-
         self.data = data
         self.omg_advertiser = omg_advertiser
+
+        self.t1 = get_connection()
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Accept': 'application/vnd.mediamath.v1+json',
+            'Cookie': 'adama_session=' + str(t1.session_id)
+        }
+
+        self.base_url = "https://" + t1.api_base + "/"
+        self.service_url = t1._get_service_path('advertisers') + "/"
+        self.constructed_url = t1._construct_url("advertisers", entity=None, child=None, limit=None)[0]
+        self.url = base_url + service_url + constructed_url
 
     def generate_json_response(self, json_dict, response, request_body):
         response_json = {
