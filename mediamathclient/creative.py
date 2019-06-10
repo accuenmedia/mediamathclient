@@ -13,7 +13,7 @@ class Creative:
         self.username = username
         self.password = password
 
-        self.t1 = get_connection()
+        self.t1 = self.get_connection()
         self.headers = {
             'Content-Type': 'application/x-www-form-urlencoded', 
             'Accept': 'application/vnd.mediamath.v1+json',
