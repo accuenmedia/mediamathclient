@@ -76,7 +76,7 @@ class LineItem:
 
     def get_lineitems_by_campaign(self, campaign_id):
         campaign_id = int(campaign_id)
-        url = self.generate_url('strategies') + "/limit/campaign={0}".format(str(campaign_id))
+        url = self.generate_url('strategies') + "/limit/campaign={0}/?full=*".format(str(campaign_id))
         return self.make_call(url, 'GET')
 
     def create_lineitem(self, payload):
