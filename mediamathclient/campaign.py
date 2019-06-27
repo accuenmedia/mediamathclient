@@ -5,7 +5,6 @@ import terminalone
 import datetime
 
 
-
 class Campaign:
 
     def __init__(self, api_key, username, password, data=None, omg_campaign=None):

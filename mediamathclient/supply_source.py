@@ -5,20 +5,28 @@ import terminalone
 import itertools
 
 
-def get_connection():
-    creds = {
-        "username": os.environ['MM_USERNAME'],
-        "password": os.environ['MM_PASSWORD'],
-        "api_key": os.environ['MM_API_KEY']
-    }
-    return terminalone.T1(auth_method="cookie", **creds)
-
-
 class SupplySource:
-    t1 = get_connection()
-    headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/vnd.mediamath.v1+json',
-               'Cookie': 'adama_session=' + str(t1.session_id)}
-    page_limit = 100
+
+    def __init__(self, api_key, username, password, data=None):
+        self.api_key = api_key
+        self.username = username
+        self.password = password
+        self.data = data
+
+        self.t1 = self.get_connection()
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Accept': 'application/vnd.mediamath.v1+json',
+            'Cookie': 'adama_session=' + str(self.t1.session_id)
+        }
+
+    def get_connection(self):
+        creds = {
+            "username": self.username,
+            "password": self.password,
+            "api_key": self.api_key
+        }
+        return terminalone.T1(auth_method="cookie", **creds)
 
     def generate_url(self, obj_type):
 

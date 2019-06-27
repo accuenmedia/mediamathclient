@@ -7,9 +7,11 @@ import datetime
 
 class Advertiser:
 
-    def __init__(self, data=None, omg_advertiser=None):
+    def __init__(self, api_key, username, password, data=None):
+        self.api_key = api_key
+        self.username = username
+        self.password = password
         self.data = data
-        self.omg_advertiser = omg_advertiser
 
         self.t1 = self.get_connection()
         self.headers = {
