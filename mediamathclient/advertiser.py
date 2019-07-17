@@ -4,14 +4,13 @@ import os
 import terminalone
 import datetime
 
+from mediamathclient.base import Base
 
-class Advertiser:
+
+class Advertiser(Base):
 
     def __init__(self, api_key, username, password, data=None):
-        self.api_key = api_key
-        self.username = username
-        self.password = password
-        self.data = data
+        super().__init__(api_key, username, password, data)
 
         self.t1 = self.get_connection()
         self.headers = {
@@ -19,14 +18,6 @@ class Advertiser:
             'Accept': 'application/vnd.mediamath.v1+json',
             'Cookie': 'adama_session=' + str(self.t1.session_id)
         }
-
-    def get_connection(self):
-        creds = {
-            "username": self.username,
-            "password": self.password,
-            "api_key": self.api_key
-        }
-        return terminalone.T1(auth_method="cookie", **creds)
 
     def generate_json_response(self, json_dict, response, request_body):
         response_json = {
