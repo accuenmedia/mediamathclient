@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mediamathclient.mediamathclient import creative
+from mediamathclient import creative
 import os
 import json
 
