@@ -4,71 +4,15 @@ import os
 import terminalone
 import itertools
 
+from mediamathclient.base import Base
 
-class LineItem:
+
+class LineItem(Base):
 
     page_limit = 100
 
     def __init__(self, api_key, username, password):
-        self.api_key = api_key
-        self.username = username
-        self.password = password
-
-        self.t1 = self.get_connection()
-        self.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Accept': 'application/vnd.mediamath.v1+json',
-            'Cookie': 'adama_session=' + str(self.t1.session_id)
-        }
-
-    def get_connection(self):
-        creds = {
-            "username": self.username,
-            "password": self.password,
-            "api_key": self.api_key
-        }
-        return terminalone.T1(auth_method="cookie", **creds)
-
-    def generate_url(self, obj_type):
-
-        base_url = "https://" + self.t1.api_base + "/"
-
-        if obj_type == "strategies":
-            service_url = self.t1._get_service_path('strategies') + "/"
-            constructed_url = self.t1._construct_url("strategies", entity=None, child=None, limit=None)[0]
-            url = base_url + service_url + constructed_url
-            return url
-
-        elif obj_type == "deals":
-            service_url = self.t1._get_service_path('deals') + "/"
-            constructed_url = self.t1._construct_url("deals", entity=None, child=None, limit=None)[0]
-            url = base_url + service_url + constructed_url
-            return url
-
-    def generate_json_response(self, json_dict, response, request_body):
-
-        response_json = {
-            "response_code": response.status_code,
-            "request_body": request_body
-        }
-
-        # error checking
-        if 'errors' in json_dict:
-            response_json['msg_type'] = 'error'
-            response_json['msg'] = json_dict['errors']
-            response_json['data'] = json_dict['errors']
-
-        elif 'data' not in json_dict:
-            response_json['data'] = json_dict
-            response_json['msg_type'] = 'success'
-            response_json['msg'] = ''
-
-        else:
-            response_json['data'] = json_dict['data']
-            response_json['msg_type'] = 'success'
-            response_json['msg'] = ''
-
-        return response_json
+        super().__init(api_key, username, password)
 
     def get_lineitem_by_id(self, lineitem_id):
         url = self.generate_url('strategies') + "/" + str(lineitem_id)

@@ -62,6 +62,11 @@ class Base:
             response_json['msg'] = json_dict['errors']
             response_json['data'] = json_dict['errors']
 
+        elif 'data' not in json_dict:
+            response_json['data'] = json_dict
+            response_json['msg_type'] = 'success'
+            response_json['msg'] = ''
+
         else:
             response_json['data'] = json_dict['data']
             response_json['msg_type'] = 'success'
