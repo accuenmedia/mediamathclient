@@ -6,6 +6,8 @@ from mediamathclient.base import Base
 
 class SupplySource(Base):
 
+    page_limit = 100
+
     def get_supply_sources(self):
         url = self.generate_url("supply_sources")
         initial_response = requests.get(url, headers=self.headers)
@@ -13,9 +15,9 @@ class SupplySource(Base):
         # calculate last page
         end = int(round(int(initial_response.json()['meta']['total_count']) / self.page_limit))
         page_data = []
-        for i in range(-1, end):
+        for i in range(0, end + 1):
             # offset is multiple of 100
-            offset = (i + 1) * self.page_limit
+            offset = i * self.page_limit
             # use offset to get every page
             url = self.generate_url('supply_sources') + "/?page_offset={0}".format(offset)
             response = requests.get(url, headers=self.headers)
@@ -26,21 +28,7 @@ class SupplySource(Base):
             'data': page_data
         }
 
-        response_json = self.generate_json_response(json_dict, initial_response, request_body)
+        curl_command = self.generate_curl_command('GET', url, self.headers)
+
+        response_json = self.generate_json_response(json_dict, initial_response, curl_command)
         return json.dumps(response_json)
-
-    def make_call(self, url, method_type, payload=None):
-
-        if method_type == 'GET':
-            response = requests.get(url, headers=self.headers, data=payload)
-            json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
-            return json.dumps(response_json)
-
-        if method_type == 'POST':
-            response = requests.post(url, headers=self.headers, data=payload)
-            json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
-            return json.dumps(response_json)
