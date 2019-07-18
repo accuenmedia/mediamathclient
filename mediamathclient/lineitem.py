@@ -12,7 +12,7 @@ class LineItem(Base):
     page_limit = 100
 
     def __init__(self, api_key, username, password):
-        super().__init(api_key, username, password)
+        super().__init__(api_key, username, password)
 
     def get_lineitem_by_id(self, lineitem_id):
         url = self.generate_url('strategies') + "/" + str(lineitem_id)
@@ -101,6 +101,7 @@ class LineItem(Base):
 
         return self.make_call(url, 'POST', payload)
 
+    # TODO: this should be its own class
     def get_deals(self):
 
         # make an initial request to pull all deals so we get the initial page/total_count info

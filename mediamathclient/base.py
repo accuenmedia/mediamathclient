@@ -49,6 +49,9 @@ class Base:
             response_json = self.generate_json_response(json_dict, response, request_body)
             return json.dumps(response_json)
 
+    def generate_curl_command(self, url, headers):
+        pass
+
     @staticmethod
     def generate_json_response(json_dict, response, request_body):
         response_json = {
