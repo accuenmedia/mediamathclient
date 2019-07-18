@@ -49,8 +49,12 @@ class Base:
             response_json = self.generate_json_response(json_dict, response, request_body)
             return json.dumps(response_json)
 
-    def generate_curl_command(self, url, headers):
-        pass
+    def generate_curl_command(self, method, url, headers, data):
+        header_list = ['"{0}: {1}"'.format(k, v) for k, v in headers.items()]
+        headers = " -H ".join(header_list)
+        command = f"curl -v {headers} {data} -X {method_type} {uri}"
+        
+        return command
 
     @staticmethod
     def generate_json_response(json_dict, response, request_body):

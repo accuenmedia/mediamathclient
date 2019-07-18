@@ -11,9 +11,6 @@ class LineItem(Base):
 
     page_limit = 100
 
-    def __init__(self, api_key, username, password):
-        super().__init__(api_key, username, password)
-
     def get_lineitem_by_id(self, lineitem_id):
         url = self.generate_url('strategies') + "/" + str(lineitem_id)
         return self.make_call(url, 'GET')

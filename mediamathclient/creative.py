@@ -6,9 +6,6 @@ from mediamathclient.base import Base
 
 
 class Creative(Base):
-    
-    def __init__(self, api_key, username, password):
-        super().__init__(api_key, username, password)
 
     def get_creative_by_id(self, creative_id):
         url = self.generate_url("atomic_creatives")

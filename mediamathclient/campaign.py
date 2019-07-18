@@ -9,10 +9,6 @@ from mediamathclient.base import Base
 
 class Campaign(Base):
 
-    def __init__(self, api_key, username, password, data=None, omg_campaign=None):
-        super().__init__(api_key, username, password, data)
-        self.omg_campaign = omg_campaign
-
     def get_campaign_by_id(self, campaign_id):
         campaign_id = int(campaign_id)
         url = self.generate_url("campaigns") + "/" + str(campaign_id)

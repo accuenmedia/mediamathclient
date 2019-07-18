@@ -6,9 +6,6 @@ from mediamathclient.base import Base
 
 class SupplySource(Base):
 
-    def __init__(self, api_key, username, password, data=None):
-        super().__init__(api_key, username, password, data)
-
     def get_supply_sources(self):
         url = self.generate_url("supply_sources")
         initial_response = requests.get(url, headers=self.headers)
