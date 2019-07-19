@@ -29,6 +29,6 @@ class SupplySource(Base):
         }
 
         curl_command = self.generate_curl_command('GET', url, self.headers)
-
         response_json = self.generate_json_response(json_dict, initial_response, curl_command)
+
         return json.dumps(response_json)

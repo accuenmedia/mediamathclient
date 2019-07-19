@@ -38,17 +38,17 @@ class Base:
         if method == 'GET':
             response = requests.get(url, headers=self.headers)
             json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
+            curl_command = self.generate_curl_command(method, url, self.headers, data)
+            response_json = self.generate_json_response(json_dict, response, curl_command)
             return json.dumps(response_json)
 
         if method == 'POST':
             response = requests.post(url, headers=self.headers, data=data)
             json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
+            curl_command = self.generate_curl_command(method, url, self.headers, data)
+            response_json = self.generate_json_response(json_dict, response, curl_command)
             return json.dumps(response_json)
-
+        
     def generate_curl_command(self, method, url, headers, data=None):
         command = "curl -v -H {headers} {data} -X {method} {uri}"
         header_list = ['"{0}: {1}"'.format(k, v) for k, v in headers.items()]
