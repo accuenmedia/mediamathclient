@@ -10,21 +10,15 @@ class Creative(Base):
     def get_creative_by_id(self, creative_id):
         url = self.generate_url("atomic_creatives")
         url = url + "/" + str(creative_id) + "/?full=*"
-        response = requests.get(url, headers=self.headers)
-        json_dict = response.json()
-        request_body = url, self.headers
-        response_json = self.generate_json_response(json_dict, response, request_body)
-        return json.dumps(response_json)
+        return self.call_mm_api('GET', url)
 
     def get_creatives_by_lineitem(self, lineitem_id):
         strategy_url = self.generate_url("strategies") + "/" + str(lineitem_id) + "/concepts"
         response = requests.get(strategy_url, headers=self.headers)
-        request_body = strategy_url, self.headers
+        request_body = self.generate_curl_command('GET', strategy_url, self.headers)
         json_dict = response.json()
-        if 'errors' in json_dict:
-            response_json = self.generate_json_response(json_dict, response, request_body)
-            return json.dumps(response_json)
-        elif len(json_dict['data']) == 0:
+        
+        if 'errors' in json_dict or len(json_dict['data']) == 0:
             response_json = self.generate_json_response(json_dict, response, request_body)
             return json.dumps(response_json)
         else:
@@ -42,6 +36,7 @@ class Creative(Base):
             # create url for each concept id
             creative_url = self.generate_url("atomic_creatives") + "/limit/concept={0}?full=*".format(str(concept_id))
             response = requests.get(creative_url, headers=self.headers)
+
             if 'errors' in response.json():
                 errors.append(response.json()['errors'][0])
             else:
@@ -50,9 +45,9 @@ class Creative(Base):
         # if errors exist within creative calls
         if len(errors) >= 1:
             json_dict['errors'] = errors
-
         else:
             # flatten multi-dim array
             creative_response = list(itertools.chain.from_iterable(creative_response))
             json_dict['data'] = creative_response
+
         return json_dict, response
