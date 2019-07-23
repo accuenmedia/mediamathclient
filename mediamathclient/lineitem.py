@@ -4,121 +4,57 @@ import os
 import terminalone
 import itertools
 
+from mediamathclient.base import Base
 
-class LineItem:
+
+class LineItem(Base):
 
     page_limit = 100
 
-    def __init__(self, api_key, username, password):
-        self.api_key = api_key
-        self.username = username
-        self.password = password
-
-        self.t1 = self.get_connection()
-        self.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Accept': 'application/vnd.mediamath.v1+json',
-            'Cookie': 'adama_session=' + str(self.t1.session_id)
-        }
-
-    def get_connection(self):
-        creds = {
-            "username": self.username,
-            "password": self.password,
-            "api_key": self.api_key
-        }
-        return terminalone.T1(auth_method="cookie", **creds)
-
-    def generate_url(self, obj_type):
-
-        base_url = "https://" + self.t1.api_base + "/"
-
-        if obj_type == "strategies":
-            service_url = self.t1._get_service_path('strategies') + "/"
-            constructed_url = self.t1._construct_url("strategies", entity=None, child=None, limit=None)[0]
-            url = base_url + service_url + constructed_url
-            return url
-
-        elif obj_type == "deals":
-            service_url = self.t1._get_service_path('deals') + "/"
-            constructed_url = self.t1._construct_url("deals", entity=None, child=None, limit=None)[0]
-            url = base_url + service_url + constructed_url
-            return url
-
-    def generate_json_response(self, json_dict, response, request_body):
-
-        response_json = {
-            "response_code": response.status_code,
-            "request_body": request_body
-        }
-
-        # error checking
-        if 'errors' in json_dict:
-            response_json['msg_type'] = 'error'
-            response_json['msg'] = json_dict['errors']
-            response_json['data'] = json_dict['errors']
-
-        elif 'data' not in json_dict:
-            response_json['data'] = json_dict
-            response_json['msg_type'] = 'success'
-            response_json['msg'] = ''
-
-        else:
-            response_json['data'] = json_dict['data']
-            response_json['msg_type'] = 'success'
-            response_json['msg'] = ''
-
-        return response_json
-
     def get_lineitem_by_id(self, lineitem_id):
         url = self.generate_url('strategies') + "/" + str(lineitem_id)
-        return self.make_call(url, 'GET')
+        return self.call_mm_api('GET', url)
 
     def get_lineitems_by_campaign(self, campaign_id):
         campaign_id = int(campaign_id)
         url = self.generate_url('strategies') + "/limit/campaign={0}/?full=*".format(str(campaign_id))
-        return self.make_call(url, 'GET')
+        return self.call_mm_api('GET', url)
 
     def create_lineitem(self, payload):
         url = self.generate_url('strategies')
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     # updates existing line items
     def update_lineitem(self, payload, lineitem_id):
         url = self.generate_url('strategies') + "/" + str(lineitem_id)
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     def assign_sitelist_to_strategy(self, lineitem_id, sitelist_ids):
         url = self.generate_url('strategies') + "/" + str(lineitem_id) + "/site_lists"
-        payload = {
-
-        }
+        payload = {}
         for idx, sitelist_id in enumerate(sitelist_ids):
             index = 'site_lists.{0}.id'.format(str(idx + 1))
             assigned = 'site_lists.{0}.assigned'.format(str(idx + 1))
             payload[index] = sitelist_id
             payload[assigned] = int(True)
 
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     def remove_sitelist_from_strategy(self, lineitem_id, sitelist_ids):
         url = self.generate_url('strategies') + "/" + str(lineitem_id) + "/site_lists"
-        payload = {
+        payload = {}
 
-        }
         for idx, sitelist_id in enumerate(sitelist_ids):
             index = 'site_lists.{0}.id'.format(str(idx + 1))
             assigned = 'site_lists.{0}.assigned'.format(str(idx + 1))
             payload[index] = sitelist_id
             payload[assigned] = int(False)
 
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     def update_strategy_domain_restrictions(self, lineitem_id, domains):
         url = self.generate_url('strategies') + "/" + str(lineitem_id) + "/domain_restrictions"
-        payload = {
-
-        }
+        payload = {}
 
         for idx, domain in enumerate(domains):
             index_domain = 'domains.{0}.domain'.format(str(idx + 1))
@@ -126,13 +62,12 @@ class LineItem:
             payload[index_domain] = domain
             payload[index_restriction] = "INCLUDE"
 
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     def set_deal_targeting_for_strategy(self, lineitem_id, deal_ids):
         url = self.generate_url('strategies') + "/" + str(lineitem_id) + "/deals"
-        payload = {
+        payload = {}
 
-        }
         for idx, deal in enumerate(deal_ids):
             index = 'deal.{0}.id'.format(str(idx + 1))
             payload[index] = str(deal)
@@ -140,14 +75,13 @@ class LineItem:
         payload["all_pmp"] = 0
         payload["all_exchanges"] = 0
 
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
     def set_strategy_exchanges(self, lineitem_id, exchange_ids):
         lineitem_id = int(lineitem_id)
         url = self.generate_url('strategies') + "/" + str(lineitem_id) + "/supplies"
-        payload = {
+        payload = {}
 
-        }
         for idx, exchange_id in enumerate(exchange_ids):
             index = 'supply_source.{0}.id'.format(str(idx + 1))
             payload[index] = str(exchange_id)
@@ -155,26 +89,21 @@ class LineItem:
         payload["all_pmp"] = 0
         payload["all_exchanges"] = 0
 
-        return self.make_call(url, 'POST', payload)
+        return self.call_mm_api('POST', url, payload)
 
+    # TODO: this should be its own class
     def get_deals(self):
 
         # make an initial request to pull all deals so we get the initial page/total_count info
         url = self.generate_url('deals') + "/?full=*"
         initial_response = requests.get(url, headers=self.headers)
-        request_body = url, self.headers
+        request_body = self.generate_curl_command('GET', url, self.headers)
+
         if 'errors' in initial_response.json():
             response_json = self.generate_json_response(initial_response.json(), initial_response, request_body)
             return json.dumps(response_json)
-
         else:
-
-            """
-                iterate through each page with the page_offset being a multiple of 100 since page_limit is 100
-            """
-
-            # change 100 to var so that if they change page_limit, we just change the var
-
+            # iterate through each page with the page_offset being a multiple of 100 since page_limit is 100
             # calculate last page
             end = int(round(int(initial_response.json()['meta']['total_count']) / self.page_limit))
             page_data = []
@@ -202,16 +131,12 @@ class LineItem:
         # make an initial request to pull all deals with advertiser_id perms so we get the initial page/total_count info
         url = self.generate_url('deals') + "/?permissions.[advertiser_id]={0}".format([advertiser_id])
         initial_response = requests.get(url, headers=self.headers)
-        request_body = url, self.headers
+        request_body = self.generate_curl_command('GET', url, self.headers)
+
         if 'errors' in initial_response.json():
             response_json = self.generate_json_response(initial_response.json(), initial_response, request_body)
             return json.dumps(response_json)
-
         else:
-
-            """
-                iterate through each page with the page_offset being a multiple of 100 since page_limit is 100
-            """
             end = int(round(int(initial_response.json()['meta']['total_count']) / self.page_limit)) + self.page_limit
             page_data = []
             url = self.generate_url('deals') + "/?page_offset=0"
@@ -231,20 +156,4 @@ class LineItem:
             }
 
             response_json = self.generate_json_response(json_dict, initial_response, request_body)
-            return json.dumps(response_json)
-
-    def make_call(self, url, method_type, payload=None):
-
-        if method_type == 'GET':
-            response = requests.get(url, headers=self.headers, data=payload)
-            json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
-            return json.dumps(response_json)
-
-        if method_type == 'POST':
-            response = requests.post(url, headers=self.headers, data=payload)
-            json_dict = response.json()
-            request_body = url, self.headers
-            response_json = self.generate_json_response(json_dict, response, request_body)
             return json.dumps(response_json)

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mediamathclient.mediamathclient import supply_source
+from mediamathclient import supply_source
 import os
 import json
 
