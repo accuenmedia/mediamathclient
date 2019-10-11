@@ -8,7 +8,7 @@ class Base:
         self.username = username
         self.password = password
         self.data = data
-        self.dsp_seat_id = dsp_seat_id
+        self.organization_id = organization_id
 
         self.t1 = self.get_connection()
         self.headers = {
