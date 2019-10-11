@@ -95,7 +95,7 @@ class LineItem(Base):
     def get_deals(self):
 
         # make an initial request to pull all deals so we get the initial page/total_count info
-        url = self.generate_url('deals') + "/?full=*"
+        url = self.generate_url('deals') + "/?owner.organization_id={0}&full=*".format(self.dsp_seat_id)
         initial_response = requests.get(url, headers=self.headers)
         request_body = self.generate_curl_command('GET', url, self.headers)
 
@@ -107,16 +107,17 @@ class LineItem(Base):
             # calculate last page
             end = int(round(int(initial_response.json()['meta']['total_count']) / self.page_limit))
             page_data = []
-            url = self.generate_url('deals') + "/?page_offset=0"
+            url = self.generate_url('deals') + "/?owner.organization_id={0}&page_offset=0".format(self.dsp_seat_id)
             response = requests.get(url, headers=self.headers)
             page_data.append(response.json()['data'])
             for i in range(0, end):
                 # offset is multiple of 100
                 offset = (i + 1) * self.page_limit
                 # use offset to get every page
-                url = self.generate_url('deals') + "/?page_offset={0}".format(offset)
+                url = self.generate_url('deals') + "/?owner.organization_id={0}&page_offset={1}".format(self.dsp_seat_id, offset)
                 response = requests.get(url, headers=self.headers)
                 page_data.append(response.json()['data'])
+                print("on loop number {0}".format(i))
             page_data = list(itertools.chain.from_iterable(page_data))
 
             json_dict = {

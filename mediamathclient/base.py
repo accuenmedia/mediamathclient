@@ -3,11 +3,12 @@ import requests
 import terminalone
 
 class Base:
-    def __init__(self, api_key, username, password, data=None):
+    def __init__(self, api_key, username, password, data=None, dsp_seat_id=None):
         self.api_key = api_key
         self.username = username
         self.password = password
         self.data = data
+        self.dsp_seat_id = dsp_seat_id
 
         self.t1 = self.get_connection()
         self.headers = {
