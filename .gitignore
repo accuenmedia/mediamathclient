@@ -1,2 +1,6 @@
 *.pyc
+
 env
+config.py
+
+.vscode
