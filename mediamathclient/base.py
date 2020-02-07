@@ -26,10 +26,10 @@ class Base:
 
         return terminalone.T1(auth_method="cookie", **creds)
 
-    def generate_url(self, obj):
+    def generate_url(self, obj, limit=None):
         base_url = "https://" + self.t1.api_base + "/"
         service_url = self.t1._get_service_path(obj) + "/"
-        constructed_url = self.t1._construct_url(obj, entity=None, child=None, limit=None)[0]
+        constructed_url = self.t1._construct_url(obj, entity=None, child=None, limit=limit)[0]
         
         url = base_url + service_url + constructed_url
 
